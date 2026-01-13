@@ -20,16 +20,21 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
       'AI': {
         title: t.features.ai_writer,
         content: (
-          <div className="space-y-2">
-             <p>{t.features.ai_writer_desc}</p>
+          <div className="space-y-4">
+             <p className="italic text-gray-600">{t.features.ai_writer_desc}</p>
+             <div className="bg-yellow-50 p-3 border-2 border-dashed border-gray-400">
+               <strong className="block mb-1">{lang === 'zh' ? '核心优势 (Key Advantage)' : 'Key Advantage'}</strong>
+               <p className="text-sm">
+                 {lang === 'zh' 
+                   ? '支持“写作”与“绘图”模型分离配置。例如：使用 DeepSeek (OpenAI 兼容) 进行低成本写作，同时使用 Gemini 2.5 或 DALL-E 进行高质量配图。' 
+                   : 'Mix and match models! Use affordable models like DeepSeek for text generation while using high-end models like Gemini 2.5 or DALL-E for image creation.'}
+               </p>
+             </div>
              <hr className="border-black border-dashed my-2"/>
-             <p className="font-bold">How to use:</p>
-             <ul className="list-disc pl-4 space-y-1">
-               <li>Open the <b>AI Assistant</b> panel on the left.</li>
-               <li>Type your prompt (e.g., "Write an article about coffee").</li>
-               <li>Use <b>Ctrl + Enter</b> to send.</li>
-               <li>Click "Insert ⬇" to add the result to the editor.</li>
-               <li>Configure custom API keys (DeepSeek, etc.) in <b>Settings</b>.</li>
+             <ul className="list-disc pl-4 space-y-1 text-sm">
+               <li><b>Chat:</b> {lang === 'zh' ? '生成大纲、润色段落、扩写内容。' : 'Draft outlines, polish paragraphs, expand ideas.'}</li>
+               <li><b>Image:</b> {lang === 'zh' ? '生成像素风插画、博文配图。' : 'Generate pixel art or blog illustrations.'}</li>
+               <li><b>Workflow:</b> {lang === 'zh' ? '对话 -> 插入编辑器 -> 一站式完成。' : 'Chat -> Insert -> Done in one place.'}</li>
              </ul>
           </div>
         )
@@ -37,14 +42,20 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
       'THEME': {
         title: t.features.themes,
         content: (
-           <div className="space-y-2">
-             <p>{t.features.themes_desc}</p>
+           <div className="space-y-4">
+             <p className="italic text-gray-600">{t.features.themes_desc}</p>
+             <div className="bg-pink-50 p-3 border-2 border-dashed border-gray-400">
+               <strong className="block mb-1">{lang === 'zh' ? '美学与效率 (Aesthetics & Efficiency)' : 'Aesthetics & Efficiency'}</strong>
+               <p className="text-sm">
+                 {lang === 'zh'
+                    ? '独特的 8-bit 像素风 UI，带来极客创作乐趣。内置“所见即所得”的手机预览，支持一键复制带样式的 HTML 到微信后台。'
+                    : 'Unique 8-bit Pixel UI for a fun geeky experience. WYSIWYG mobile preview ensures your content looks perfect in WeChat.'}
+               </p>
+             </div>
              <hr className="border-black border-dashed my-2"/>
-             <p className="font-bold">How to use:</p>
-             <ul className="list-disc pl-4 space-y-1">
-               <li>Click "Theme Library" in the bottom right of the preview.</li>
-               <li>Select a preset theme.</li>
-               <li>Or click <b>AI Create</b> to generate a new style by description (e.g., "Cyberpunk Neon").</li>
+             <ul className="list-disc pl-4 space-y-1 text-sm">
+               <li><b>AI Themes:</b> {lang === 'zh' ? '描述 "黑客帝国风格"，AI 自动生成 CSS。' : 'Describe "Matrix Style", AI generates the CSS.'}</li>
+               <li><b>Version Control:</b> {lang === 'zh' ? '内置时光机，随时回溯历史版本。' : 'Built-in time machine to restore history.'}</li>
              </ul>
           </div>
         )
@@ -52,14 +63,20 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
       'DATA': {
         title: t.features.data,
         content: (
-          <div className="space-y-2">
-             <p>{t.features.data_desc}</p>
+          <div className="space-y-4">
+             <p className="italic text-gray-600">{t.features.data_desc}</p>
+             <div className="bg-blue-50 p-3 border-2 border-dashed border-gray-400">
+               <strong className="block mb-1">{lang === 'zh' ? '去中心化 (Decentralized)' : 'Decentralized'}</strong>
+               <p className="text-sm">
+                 {lang === 'zh'
+                   ? '无后端服务器，所有数据存储在浏览器本地 (Local Storage)。你的 API Key 和文章草稿完全私有。'
+                   : 'No backend server. All data lives in your browser Local Storage. Your API Keys and drafts are 100% private.'}
+               </p>
+             </div>
              <hr className="border-black border-dashed my-2"/>
-             <p className="font-bold">Settings & API:</p>
-             <ul className="list-disc pl-4 space-y-1">
-               <li>Click "Settings" (Data Manager) in the top header.</li>
-               <li><b>General Tab:</b> Export your articles or entire app config.</li>
-               <li><b>AI Config Tab:</b> Switch between Google Gemini (Default) or Custom OpenAI-compatible providers (like DeepSeek).</li>
+             <ul className="list-disc pl-4 space-y-1 text-sm">
+               <li><b>Import/Export:</b> {lang === 'zh' ? '支持配置与数据的全量备份迁移。' : 'Full backup and migration support.'}</li>
+               <li><b>BYOK:</b> {lang === 'zh' ? '接入你自己的高额度 API Key。' : 'Use your own high-limit API keys.'}</li>
              </ul>
           </div>
         )
@@ -100,7 +117,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
             {t.subtitle}
           </p>
           <div className="text-sm font-pixel text-gray-500 animate-pulse">
-            {lang === 'zh' ? '点击下方卡片查看功能指南' : 'Click cards below for guides'}
+            {lang === 'zh' ? '点击下方卡片查看功能优势' : 'Click cards below for feature details'}
           </div>
         </div>
 
@@ -108,28 +125,28 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <div onClick={() => setActiveGuide('AI')} className="cursor-pointer group">
               <PixelCard className="h-full group-hover:-translate-y-1 transition-transform border-black group-hover:border-pixel-primary">
-                  <div className="text-4xl mb-2">✍️</div>
+                  <div className="text-4xl mb-2">🤖</div>
                   <h3 className="font-pixel text-xl font-bold mb-2 group-hover:text-pixel-primary">{t.features.ai_writer}</h3>
-                  <p className="text-sm text-gray-600">{t.features.ai_writer_desc}</p>
-                  <p className="text-xs text-blue-500 mt-2 underline">View Guide &rarr;</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{t.features.ai_writer_desc}</p>
+                  <p className="text-xs text-blue-500 mt-3 underline decoration-dashed">Learn More &rarr;</p>
               </PixelCard>
             </div>
             
             <div onClick={() => setActiveGuide('THEME')} className="cursor-pointer group">
               <PixelCard className="h-full group-hover:-translate-y-1 transition-transform border-black group-hover:border-pixel-secondary">
-                  <div className="text-4xl mb-2">🎭</div>
+                  <div className="text-4xl mb-2">🎨</div>
                   <h3 className="font-pixel text-xl font-bold mb-2 group-hover:text-pixel-secondary">{t.features.themes}</h3>
-                  <p className="text-sm text-gray-600">{t.features.themes_desc}</p>
-                   <p className="text-xs text-blue-500 mt-2 underline">View Guide &rarr;</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{t.features.themes_desc}</p>
+                   <p className="text-xs text-blue-500 mt-3 underline decoration-dashed">Learn More &rarr;</p>
               </PixelCard>
             </div>
 
             <div onClick={() => setActiveGuide('DATA')} className="cursor-pointer group">
               <PixelCard className="h-full group-hover:-translate-y-1 transition-transform border-black">
-                  <div className="text-4xl mb-2">⚙️</div>
+                  <div className="text-4xl mb-2">🔒</div>
                   <h3 className="font-pixel text-xl font-bold mb-2">{t.features.data}</h3>
-                  <p className="text-sm text-gray-600">{t.features.data_desc}</p>
-                   <p className="text-xs text-blue-500 mt-2 underline">View Guide &rarr;</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{t.features.data_desc}</p>
+                   <p className="text-xs text-blue-500 mt-3 underline decoration-dashed">Learn More &rarr;</p>
               </PixelCard>
             </div>
         </div>

@@ -8,8 +8,8 @@ import { ThemeSelectionModal } from './components/ThemeSelectionModal';
 import { SettingsModal } from './components/SettingsModal'; // Renamed
 import { VersionHistoryModal } from './components/VersionHistoryModal';
 import { OnboardingTour } from './components/OnboardingTour'; // New
-import { ThemeStyle, AppSettings, UserData, Language, ChatMessage, ArticleVersion, AIConfig } from './types';
-import { defaultThemes } from './utils/wechatStyles';
+import { ThemeStyle, AppSettings, UserData, Language, ChatMessage, ArticleVersion, AIConfig, FontSize } from './types';
+import { defaultThemes, applyFontSize } from './utils/wechatStyles';
 import { translations } from './utils/translations';
 import { generateThemeConfig } from './services/geminiService';
 
@@ -119,6 +119,7 @@ const App: React.FC = () => {
   const [view, setView] = useState<ViewMode>('HOME');
   const [lang, setLang] = useState<Language>(initialConfig.language || 'zh');
   const [markdown, setMarkdown] = useState<string>(loadInitialMarkdown);
+  const [fontSize, setFontSize] = useState<FontSize>(initialConfig.fontSize || 'medium');
   
   // Separated States for Chat and Images
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>(loadInitialChat);
@@ -127,7 +128,8 @@ const App: React.FC = () => {
   const [versions, setVersions] = useState<ArticleVersion[]>(loadInitialVersions);
   
   const [themes, setThemes] = useState<Record<string, ThemeStyle>>(initialConfig.customThemes || defaultThemes);
-  const [currentThemeKey, setCurrentThemeKey] = useState<string>('DEFAULT');
+  // Default to APPLE_CHIC as 'DEFAULT' key does not exist in defaultThemes
+  const [currentThemeKey, setCurrentThemeKey] = useState<string>('APPLE_CHIC');
   const [mobileView, setMobileView] = useState<MobileView>(MobileView.EDITOR);
   
   // AI Configuration State
@@ -197,14 +199,15 @@ const App: React.FC = () => {
   // Auto-save Config (Themes & Lang & AI Configs)
   useEffect(() => {
     const config: AppSettings = { 
-      customThemes: themes, 
+      customThemes: themes,
       language: lang,
       textAI: textAI,
       imageAI: imageAI,
+      fontSize: fontSize,
       hasSeenOnboarding: !showOnboarding && initialConfig.hasSeenOnboarding // Persist seen state
     };
     safeSave(KEYS.CONFIG, config);
-  }, [themes, lang, textAI, imageAI, showOnboarding]);
+  }, [themes, lang, textAI, imageAI, showOnboarding, fontSize]);
 
   // Check onboarding on editor view
   useEffect(() => {
@@ -240,23 +243,81 @@ const App: React.FC = () => {
     }, 10);
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
+    const previewElement = document.getElementById('wechat-preview-content');
+    if (!previewElement) {
+       alert(t.ui.copy_fail);
+       return;
+    }
+
+    // 1. Modern API (Navigator Clipboard) - Best for preserving rich text styles
+    try {
+        const htmlContent = previewElement.outerHTML;
+        
+        // We need both HTML (for styles) and Plain Text (fallback)
+        const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+        const blobText = new Blob([previewElement.innerText], { type: 'text/plain' });
+        
+        // Check if ClipboardItem is supported (Safari, Chrome, Edge)
+        if (typeof ClipboardItem !== 'undefined') {
+            const data = [new ClipboardItem({
+                'text/html': blobHtml,
+                'text/plain': blobText
+            })];
+            
+            await navigator.clipboard.write(data);
+            alert(t.ui.copy_success);
+            return; // Success, exit early
+        }
+    } catch (err) {
+        console.warn("Modern clipboard API failed, falling back to legacy.", err);
+    }
+
+    // 2. Fallback: Legacy execCommand('copy')
+    // This is less reliable for complex CSS but works on older browsers
+    const range = document.createRange();
+    range.selectNode(previewElement);
+    const selection = window.getSelection();
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+      try {
+        const successful = document.execCommand('copy');
+        alert(successful ? t.ui.copy_success : t.ui.copy_fail);
+      } catch (err) {
+        alert(t.ui.copy_fail);
+      }
+      selection.removeAllRanges();
+    }
+  };
+
+  const handleExportHTML = () => {
     const previewElement = document.getElementById('wechat-preview-content');
     if (previewElement) {
-      const range = document.createRange();
-      range.selectNode(previewElement);
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(range);
-        try {
-          const successful = document.execCommand('copy');
-          alert(successful ? t.ui.copy_success : t.ui.copy_fail);
-        } catch (err) {
-          alert(t.ui.copy_fail);
-        }
-        selection.removeAllRanges();
-      }
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChaoFlux Export</title>
+</head>
+<body style="margin:0; padding:0; background-color: #f0f0f0;">
+${previewElement.outerHTML}
+</body>
+</html>`;
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chaoflux-article-${Date.now()}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } else {
+        alert(t.ui.copy_fail);
     }
   };
 
@@ -267,7 +328,8 @@ const App: React.FC = () => {
       customThemes: themes,
       language: lang,
       textAI: textAI,
-      imageAI: imageAI
+      imageAI: imageAI,
+      fontSize: fontSize
     };
     downloadJSON(config, `chaoflux-config-${Date.now()}`);
   };
@@ -300,6 +362,7 @@ const App: React.FC = () => {
         if (config.language) setLang(config.language);
         if (config.textAI) setTextAI(config.textAI);
         if (config.imageAI) setImageAI(config.imageAI);
+        if (config.fontSize) setFontSize(config.fontSize);
         // Fallback for old export format
         if (config.aiConfig && !config.textAI) setTextAI(config.aiConfig);
         
@@ -420,7 +483,10 @@ const App: React.FC = () => {
     return <HomePage onStart={() => setView('EDITOR')} lang={lang} />;
   }
 
-  const activeTheme = themes[currentThemeKey] || defaultThemes['DEFAULT'];
+  // Calculate active theme with font size applied
+  // Robust Fallback: Current Key -> Apple Chic -> First Available Key -> Default Themes Apple Chic
+  const baseTheme = themes[currentThemeKey] || themes['APPLE_CHIC'] || Object.values(themes)[0] || defaultThemes['APPLE_CHIC'];
+  const activeTheme = applyFontSize(baseTheme, fontSize);
 
   return (
     <div className="fixed inset-0 flex flex-col p-2 md:p-4 font-sans bg-gray-200 text-lg">
@@ -440,6 +506,10 @@ const App: React.FC = () => {
                 {t.ui.switch_lang}
             </button>
             
+            <PixelButton onClick={handleExportHTML} variant="secondary" className="py-2 text-sm hidden md:block">
+                {t.ui.export_html}
+            </PixelButton>
+
             <PixelButton onClick={() => setShowSettings(true)} className="py-2 text-sm hidden md:block">
                 {lang === 'zh' ? '设置' : 'SETTINGS'}
             </PixelButton>
@@ -576,6 +646,8 @@ const App: React.FC = () => {
             setShowThemeModal(true);
           }}
           lang={lang}
+          currentFontSize={fontSize}
+          onFontSizeChange={setFontSize}
         />
       )}
 
@@ -590,13 +662,15 @@ const App: React.FC = () => {
               customThemes: themes,
               language: lang,
               textAI: textAI,
-              imageAI: imageAI
+              imageAI: imageAI,
+              fontSize: fontSize
             }}
             onSaveConfig={(cfg) => {
               if (cfg.customThemes) setThemes(cfg.customThemes);
               if (cfg.language) setLang(cfg.language);
               if (cfg.textAI) setTextAI(cfg.textAI);
               if (cfg.imageAI) setImageAI(cfg.imageAI);
+              if (cfg.fontSize) setFontSize(cfg.fontSize);
               setShowSettings(false);
             }}
             lang={lang}

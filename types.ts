@@ -1,6 +1,7 @@
 import React from 'react';
 
 export type Language = 'zh' | 'en';
+export type FontSize = 'small' | 'medium' | 'large';
 
 export enum GeneratorMode {
   TEXT = 'TEXT',
@@ -58,6 +59,7 @@ export interface UserData {
 export interface AppSettings {
   customThemes: Record<string, ThemeStyle>;
   language: Language;
+  fontSize?: FontSize;
   // Separate configs
   textAI?: AIConfig;
   imageAI?: AIConfig;
