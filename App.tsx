@@ -71,7 +71,19 @@ const KEYS = {
 
 const App: React.FC = () => {
   // --- INITIALIZATION HELPERS ---
-  const loadInitialMarkdown = () => localStorage.getItem(KEYS.MARKDOWN) || DEFAULT_MARKDOWN_ZH;
+  const loadInitialMarkdown = () => {
+    const saved = localStorage.getItem(KEYS.MARKDOWN);
+    if (!saved) return DEFAULT_MARKDOWN_ZH;
+    try {
+      // safeSave uses JSON.stringify, so we must parse it to get the original string with formatting
+      const parsed = JSON.parse(saved);
+      // Ensure we have a string
+      return typeof parsed === 'string' ? parsed : saved;
+    } catch {
+      // Fallback for legacy raw text data
+      return saved;
+    }
+  };
   
   const loadInitialChat = (): ChatMessage[] => {
     try {
