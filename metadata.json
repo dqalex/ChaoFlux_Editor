@@ -1,0 +1,5 @@
+{
+  "name": "ChaoFlux Editor",
+  "description": "A retro-style, pixel-art WeChat Official Account article editor featuring AI-assisted writing and image generation powered by Gemini.",
+  "requestFramePermissions": []
+}
