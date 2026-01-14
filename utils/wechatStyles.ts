@@ -235,5 +235,19 @@ export const defaultThemes: Record<string, ThemeStyle> = {
     blockquote: { border: 'none', padding: '20px', color: '#555', backgroundColor: '#f2e6e6', margin: '30px 0', borderRadius: '4px' },
     img: { maxWidth: '100%', display: 'block', margin: '30px auto', border: '2px solid #902c28', padding: '4px' },
     hr: { border: 'none', borderTop: '1px solid #d9b3b3', margin: '50px 0', width: '30%', marginLeft: 'auto', marginRight: 'auto' }
+  },
+
+  // --- VI. 赛博复古 (CYBER RETRO - FROM IMAGE) ---
+
+  'RETRO_FUTURE': {
+    container: { ...commonStyles, fontFamily: '"VT323", "Courier New", monospace', fontSize: '17px', lineHeight: '1.6', color: '#1a1a1a', backgroundColor: '#fff', padding: '20px', textAlign: 'left' },
+    h1: { fontSize: '36px', fontWeight: 'bold', textAlign: 'center', marginBottom: '30px', color: '#ff00de', textTransform: 'uppercase', textShadow: '4px 4px 0px #e0e0e0', letterSpacing: '4px', lineHeight: '1.2' },
+    h2: { fontSize: '20px', fontWeight: 'bold', textAlign: 'center', marginTop: '35px', marginBottom: '20px', color: '#fff', backgroundColor: '#00e5ff', padding: '10px 25px', borderRadius: '12px', display: 'inline-block', border: '3px solid #1a1a1a', boxShadow: '4px 4px 0px #1a1a1a', textShadow: '1px 1px 0 #1a1a1a' },
+    h3: { fontSize: '18px', fontWeight: 'bold', textAlign: 'left', marginTop: '25px', marginBottom: '15px', color: '#ff00de', textTransform: 'uppercase' },
+    p: { ...commonStyles, marginBottom: '1.2em' },
+    li: { marginBottom: '8px' },
+    blockquote: { backgroundColor: '#181825', border: '4px solid #a0a0a0', borderRadius: '24px', padding: '24px', color: '#00e5ff', margin: '30px 0', boxShadow: 'inset 0 0 0 2px #555, 0 10px 20px rgba(0,0,0,0.2)', fontFamily: '"Courier New", monospace', position: 'relative' },
+    img: { maxWidth: '100%', borderRadius: '16px', display: 'block', margin: '30px auto', border: '3px solid #1a1a1a', boxShadow: '6px 6px 0 #eee' },
+    hr: { height: '16px', background: 'linear-gradient(90deg, #00e5ff, #ff00de)', margin: '40px auto', width: '180px', borderRadius: '8px', border: '2px solid #1a1a1a', position: 'relative' }
   }
 };
