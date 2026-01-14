@@ -128,8 +128,8 @@ const App: React.FC = () => {
   const [versions, setVersions] = useState<ArticleVersion[]>(loadInitialVersions);
   
   const [themes, setThemes] = useState<Record<string, ThemeStyle>>(initialConfig.customThemes || defaultThemes);
-  // Default to APPLE_CHIC as 'DEFAULT' key does not exist in defaultThemes
-  const [currentThemeKey, setCurrentThemeKey] = useState<string>('APPLE_CHIC');
+  // Default to first theme available if key is missing
+  const [currentThemeKey, setCurrentThemeKey] = useState<string>('MINIMAL_LIT');
   const [mobileView, setMobileView] = useState<MobileView>(MobileView.EDITOR);
   
   // AI Configuration State
@@ -484,8 +484,8 @@ ${previewElement.outerHTML}
   }
 
   // Calculate active theme with font size applied
-  // Robust Fallback: Current Key -> Apple Chic -> First Available Key -> Default Themes Apple Chic
-  const baseTheme = themes[currentThemeKey] || themes['APPLE_CHIC'] || Object.values(themes)[0] || defaultThemes['APPLE_CHIC'];
+  // Robust Fallback: Current Key -> Minimal Lit -> First Available Key -> Default Themes Minimal Lit
+  const baseTheme = themes[currentThemeKey] || themes['MINIMAL_LIT'] || Object.values(themes)[0] || defaultThemes['MINIMAL_LIT'];
   const activeTheme = applyFontSize(baseTheme, fontSize);
 
   return (
@@ -506,12 +506,13 @@ ${previewElement.outerHTML}
                 {t.ui.switch_lang}
             </button>
             
-            <PixelButton onClick={handleExportHTML} variant="secondary" className="py-2 text-sm hidden md:block">
-                {t.ui.export_html}
-            </PixelButton>
-
+            {/* UPDATED ORDER: Settings -> Export -> Copy */}
             <PixelButton onClick={() => setShowSettings(true)} className="py-2 text-sm hidden md:block">
                 {lang === 'zh' ? '设置' : 'SETTINGS'}
+            </PixelButton>
+
+            <PixelButton onClick={handleExportHTML} variant="secondary" className="py-2 text-sm hidden md:block">
+                {t.ui.export_html}
             </PixelButton>
             
             <PixelButton onClick={copyToClipboard} variant="primary" className="py-2 text-sm md:text-base">
@@ -592,10 +593,12 @@ ${previewElement.outerHTML}
           {/* Right: Mobile Preview */}
           <section className={`
             h-full flex flex-col min-h-0
-            lg:col-span-4 lg:flex items-center justify-center bg-gray-300 border-4 border-dashed border-gray-400 rounded-xl p-4
+            lg:col-span-4 lg:flex items-center justify-center 
+            lg:bg-gray-300 bg-gray-200 
+            lg:border-4 lg:border-dashed lg:border-gray-400 lg:rounded-xl lg:p-4 p-0
             ${mobileView === MobileView.PREVIEW ? 'flex' : 'hidden'}
           `}>
-            <div className="flex flex-col w-full h-full max-w-[400px]">
+            <div className="flex flex-col w-full h-full lg:max-w-[400px]">
                 {/* Theme Selector Button */}
                 <div className="bg-white p-3 border-4 border-black mb-4 flex justify-between items-center shrink-0">
                      <span className="font-pixel text-lg truncate flex-1 mr-2">
@@ -610,12 +613,14 @@ ${previewElement.outerHTML}
                      </PixelButton>
                 </div>
 
-                {/* Phone Frame */}
-                <div className="flex-1 bg-white border-x-[14px] border-y-[28px] border-gray-800 rounded-[2.5rem] shadow-2xl overflow-hidden relative w-full">
-                     {/* Dynamic Notch */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-10"></div>
+                {/* Phone Frame - Responsive Styles applied here */}
+                {/* On Desktop (lg): Show phone borders, notch, shadow. */}
+                {/* On Mobile (default): Remove borders, shadow, notch, fit width. */}
+                <div className="flex-1 bg-white lg:border-x-[14px] lg:border-y-[28px] lg:border-gray-800 lg:rounded-[2.5rem] lg:shadow-2xl overflow-hidden relative w-full border-0 rounded-none shadow-none">
+                     {/* Dynamic Notch (Desktop Only) */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-10 hidden lg:block"></div>
                     
-                    <div className="h-full overflow-y-auto custom-scrollbar pt-8 bg-white">
+                    <div className="h-full overflow-y-auto custom-scrollbar pt-0 lg:pt-8 bg-white">
                         <ArticlePreview markdown={markdown} themeStyle={activeTheme} />
                     </div>
                 </div>

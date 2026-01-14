@@ -45,17 +45,18 @@ const HomePage: React.FC<HomePageProps> = ({ onStart, lang }) => {
            <div className="space-y-4">
              <p className="italic text-gray-600">{t.features.themes_desc}</p>
              <div className="bg-pink-50 p-3 border-2 border-dashed border-gray-400">
-               <strong className="block mb-1">{lang === 'zh' ? '美学与效率 (Aesthetics & Efficiency)' : 'Aesthetics & Efficiency'}</strong>
+               <strong className="block mb-1">{lang === 'zh' ? '排版美学 (Typography Aesthetics)' : 'Typography Aesthetics'}</strong>
                <p className="text-sm">
                  {lang === 'zh'
-                    ? '独特的 8-bit 像素风 UI，带来极客创作乐趣。内置“所见即所得”的手机预览，支持一键复制带样式的 HTML 到微信后台。'
-                    : 'Unique 8-bit Pixel UI for a fun geeky experience. WYSIWYG mobile preview ensures your content looks perfect in WeChat.'}
+                    ? '16+ 精选高级感主题，涵盖极简文艺、时尚潮流、商务严谨、活泼创意、杂志质感等风格。'
+                    : '16+ Premium Themes covering Minimalist, Fashion, Business, Creative, and Magazine styles.'}
                </p>
              </div>
              <hr className="border-black border-dashed my-2"/>
              <ul className="list-disc pl-4 space-y-1 text-sm">
-               <li><b>AI Themes:</b> {lang === 'zh' ? '描述 "黑客帝国风格"，AI 自动生成 CSS。' : 'Describe "Matrix Style", AI generates the CSS.'}</li>
-               <li><b>Version Control:</b> {lang === 'zh' ? '内置时光机，随时回溯历史版本。' : 'Built-in time machine to restore history.'}</li>
+               <li><b>Font Size:</b> {lang === 'zh' ? '支持全局调整字号（小/中/大）。' : 'Adjust global font size (S/M/L).'}</li>
+               <li><b>Mobile Ready:</b> {lang === 'zh' ? '手机端访问自动切换为沉浸式全屏预览，无外框干扰。' : 'Auto immersive full-screen preview on mobile devices.'}</li>
+               <li><b>AI Themes:</b> {lang === 'zh' ? '描述风格，AI 自动生成专属 CSS。' : 'Describe a style, AI generates the CSS.'}</li>
              </ul>
           </div>
         )
