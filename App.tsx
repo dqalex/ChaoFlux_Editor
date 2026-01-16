@@ -22,6 +22,7 @@ enum MobileView {
 }
 
 type ViewMode = 'HOME' | 'EDITOR';
+type PreviewDevice = 'MOBILE' | 'TABLET' | 'DESKTOP';
 
 const DEFAULT_MARKDOWN_ZH = `# 欢迎使用 潮思编辑器 (ChaoFlux)
 
@@ -109,6 +110,7 @@ const App: React.FC = () => {
   const [imageAI, setImageAI] = useState<AIConfig | undefined>(undefined);
   const [mobileView, setMobileView] = useState<MobileView>(MobileView.EDITOR);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('MOBILE');
 
   // Modals
   const [showThemeLibrary, setShowThemeLibrary] = useState(false);
@@ -539,15 +541,63 @@ const App: React.FC = () => {
           </section>
 
           {/* Right: Mobile Preview */}
-          <section className={`h-full flex flex-col min-h-0 lg:col-span-4 lg:flex items-center justify-center lg:bg-gray-300 bg-gray-200 lg:border-4 lg:border-dashed lg:border-gray-400 lg:rounded-xl lg:p-4 p-0 ${mobileView === MobileView.PREVIEW ? 'flex' : 'hidden'}`}>
-            <div className="flex flex-col w-full h-full lg:max-w-[400px]">
+          <section className={`h-full flex flex-col min-h-0 lg:col-span-4 lg:flex items-center lg:justify-center lg:bg-gray-300 bg-gray-200 lg:border-4 lg:border-dashed lg:border-gray-400 lg:rounded-xl lg:p-4 p-0 ${mobileView === MobileView.PREVIEW ? 'flex' : 'hidden'}`}>
+            
+             {/* Device Switcher */}
+             <div className="mb-2 flex bg-white border-2 border-black rounded-lg overflow-hidden shrink-0 shadow-[2px_2px_0_0_rgba(0,0,0,1)] z-10">
+                <button 
+                    onClick={() => setPreviewDevice('MOBILE')}
+                    className={`px-3 py-1.5 flex items-center gap-1 ${previewDevice === 'MOBILE' ? 'bg-pixel-primary text-white' : 'hover:bg-gray-100'}`}
+                    title="Mobile"
+                >
+                   📱 <span className="hidden xl:inline text-xs font-pixel">MOBILE</span>
+                </button>
+                <button 
+                     onClick={() => setPreviewDevice('TABLET')}
+                     className={`px-3 py-1.5 flex items-center gap-1 border-l-2 border-black ${previewDevice === 'TABLET' ? 'bg-pixel-primary text-white' : 'hover:bg-gray-100'}`}
+                     title="Tablet"
+                >
+                   📟 <span className="hidden xl:inline text-xs font-pixel">TABLET</span>
+                </button>
+                <button 
+                     onClick={() => setPreviewDevice('DESKTOP')}
+                     className={`px-3 py-1.5 flex items-center gap-1 border-l-2 border-black ${previewDevice === 'DESKTOP' ? 'bg-pixel-primary text-white' : 'hover:bg-gray-100'}`}
+                     title="Desktop"
+                >
+                   💻 <span className="hidden xl:inline text-xs font-pixel">PC</span>
+                </button>
+            </div>
+
+            <div className={`flex flex-col w-full h-full transition-all duration-300 ${
+                previewDevice === 'MOBILE' ? 'lg:max-w-[375px]' : 
+                previewDevice === 'TABLET' ? 'lg:max-w-[600px]' : 
+                'lg:max-w-full'
+            }`}>
                 <div className="bg-white p-3 border-4 border-black mb-4 flex justify-between items-center shrink-0">
                      <span className="font-pixel text-lg truncate flex-1 mr-2">{t.ui.theme_label}: <span className="text-pixel-primary">{currentThemeKey.replace(/_/g, ' ')}</span></span>
                      <PixelButton onClick={() => setShowThemeLibrary(true)} className="text-xs px-2 py-1 h-8" variant="secondary">📚 {t.ui.theme_library}</PixelButton>
                 </div>
-                <div className="flex-1 bg-white lg:border-x-[14px] lg:border-y-[28px] lg:border-gray-800 lg:rounded-[2.5rem] lg:shadow-2xl overflow-hidden relative w-full border-0 rounded-none shadow-none">
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-10 hidden lg:block"></div>
-                    <div className="h-full overflow-y-auto custom-scrollbar pt-0 lg:pt-8 bg-white">
+                
+                <div className={`flex-1 bg-white overflow-hidden relative w-full shadow-xl transition-all duration-300 ${
+                     previewDevice === 'MOBILE' ? 'lg:border-x-[12px] lg:border-y-[24px] lg:border-gray-800 lg:rounded-[2rem]' :
+                     previewDevice === 'TABLET' ? 'lg:border-[12px] lg:border-gray-800 lg:rounded-[1.5rem]' :
+                     'lg:border-4 lg:border-black lg:rounded-md'
+                }`}>
+                    {/* Notch only for Mobile */}
+                    {previewDevice === 'MOBILE' && (
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-5 bg-gray-800 rounded-b-xl z-10 hidden lg:block"></div>
+                    )}
+                     
+                     {/* Camera dot for Tablet */}
+                    {previewDevice === 'TABLET' && (
+                        <div className="absolute top-1/2 left-1 transform -translate-y-1/2 w-1.5 h-1.5 bg-gray-600 rounded-full z-10 hidden lg:block"></div>
+                    )}
+
+                    <div className={`h-full overflow-y-auto custom-scrollbar bg-white ${
+                        previewDevice === 'MOBILE' ? 'pt-0 lg:pt-6' : 
+                        previewDevice === 'TABLET' ? 'pt-0 lg:pt-4' : 
+                        'pt-0'
+                    }`}>
                         <ArticlePreview markdown={markdown} themeStyle={activeTheme} />
                     </div>
                 </div>
